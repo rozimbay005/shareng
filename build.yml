@@ -1,0 +1,36 @@
+name: Build APK
+
+# Har safar main/master branchga push qilinganda yoki qo'lda ishga tushirilganda ishlaydi
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Kodni olish
+        uses: actions/checkout@v4
+
+      - name: Java o'rnatish
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Android SDK o'rnatish
+        uses: android-actions/setup-android@v3
+
+      - name: Gradle bilan APK yig'ish (debug versiya)
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: assembleDebug ishga tushirish
+        run: gradle assembleDebug --no-daemon
+
+      - name: APK'ni saqlash (Artifacts)
+        uses: actions/upload-artifact@v4
+        with:
+          name: wifi-transfer-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
